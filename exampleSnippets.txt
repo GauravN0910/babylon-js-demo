@@ -1,0 +1,47 @@
+  const sphere = new BABYLON.MeshBuilder.CreateSphere('mySphere', {diameter: 0.4}, scene);
+
+  scene.onPointerDown = function castRay(){
+    const hit = scene.pick(scene.pointerX, scene.pointerY);
+
+    if(hit.pickedMesh && hit.pickedMesh.name=='mySphere'){
+      hit.pickedMesh.material = new BABYLON.StandardMaterial();
+      hit.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+    }
+  }
+
+  BABYLON.SceneLoader.ImportMesh(
+    '',
+    '/',
+    'Cow.gltf',
+    scene,
+    function(meshes, particleSystems, skeletons, animationGroups){
+      const model = meshes[0];
+      model.scaling = new BABYLON.Vector3(0.25, 0.25, 0.25);
+
+      animationGroups[5].play(true);
+    }
+  );
+
+  BABYLON.SceneLoader.ImportMeshAsync('', '/', 'Cow.gltf', scene).then((result) => {
+    const importedAnimationGroups = result.animationGroups;
+    importedAnimationGroups[3].play(true);  
+  });
+
+
+  const gaussianSplat = new BABYLON.GaussianSplattingMesh('testSplat', null, scene);
+  gaussianSplat.loadFileAsync('bonsai.ply');
+
+
+  
+CreateEnvironment()async function CreateEnvironment() {
+  const result = await BABYLON.SceneLoader.ImportMeshAsync(
+    "",
+    "./data/",
+    "house_with_interior.glb",
+    scene
+  );
+  const meshes = result.meshes;
+  meshes.forEach(mesh => {
+    mesh.checkCollisions = true;
+  });
+}
